@@ -16,6 +16,12 @@ export function savePost(post: Diary) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(newPosts));
 }
 
+export const updatePost = (updated: Diary) => {
+    const posts = loadPosts();
+    const newPosts = posts.map((p) => (p.id === updated.id ? updated : p));
+    localStorage.setItem("posts", JSON.stringify(newPosts));
+  };  
+
 // 投稿を削除
 export function deletePost(id: number) {
   const posts = loadPosts();
