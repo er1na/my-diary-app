@@ -1,0 +1,45 @@
+# .github/workflows/test.yml
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      chromium:
+        image: mcr.microsoft.com/playwright:v1.44.0-focal
+        options: --ipc=host
+        ports:
+          - 3000:3000
+
+    steps:
+      - name: 📥 リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: 🔧 Node.js セットアップ
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 📦 パッケージインストール
+        run: npm ci
+
+      - name: 🔨 Next.js 本番ビルド
+        run: npm run build
+
+      - name: 🚀 アプリ起動（バックグラウンド）
+        run: npm start &
+        env:
+          NODE_ENV: production
+
+      - name: 🧪 Playwright の依存インストール
+        run: npx playwright install --with-deps
+
+      - name: 🧪 E2E テスト実行
+        run: npx playwright test
