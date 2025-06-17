@@ -27,6 +27,9 @@ export default function Home() {
   return (
     <main className="max-w-2xl mx-auto py-10 px-4">
       <h1 className="text-2xl font-bold mb-6">投稿一覧</h1>
+      <Link href="/new" className="inline-block mb-6 text-blue-600 hover:underline" data-testid="new-post-link">
+        新規投稿
+      </Link>
 
       {posts.length === 0 ? (
         <p className="text-gray-500">まだ投稿がありません。</p>

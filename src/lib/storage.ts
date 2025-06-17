@@ -1,30 +1,31 @@
+// lib/storage.ts
+import fs from "fs";
+import path from "path";
 import { Diary } from "@/types/diary";
 
-const STORAGE_KEY = "diary_posts";
+const filePath = path.join(process.cwd(), "posts.json");
 
-// 投稿一覧を取得
 export function loadPosts(): Diary[] {
-  if (typeof window === "undefined") return [];
-  const raw = localStorage.getItem(STORAGE_KEY);
-  return raw ? JSON.parse(raw) : [];
+  try {
+    const jsonData = fs.readFileSync(filePath, "utf-8");
+    return JSON.parse(jsonData);
+  } catch {
+    return [];
+  }
 }
 
-// 投稿を追加して保存
-export function savePost(post: Diary) {
+export function savePost(post: Diary): void {
   const posts = loadPosts();
-  const newPosts = [post, ...posts]; // 新しい投稿を先頭に
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(newPosts));
+  posts.push(post);
+  fs.writeFileSync(filePath, JSON.stringify(posts, null, 2));
 }
 
-export const updatePost = (updated: Diary) => {
-    const posts = loadPosts();
-    const newPosts = posts.map((p) => (p.id === updated.id ? updated : p));
-    localStorage.setItem("posts", JSON.stringify(newPosts));
-  };  
+export function deletePost(id: number): void {
+  const posts = loadPosts().filter((p) => p.id !== id);
+  fs.writeFileSync(filePath, JSON.stringify(posts, null, 2));
+}
 
-// 投稿を削除
-export function deletePost(id: number) {
-  const posts = loadPosts();
-  const newPosts = posts.filter((p) => p.id !== id);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(newPosts));
+export function updatePost(updated: Diary): void {
+  const posts = loadPosts().map((p) => (p.id === updated.id ? updated : p));
+  fs.writeFileSync(filePath, JSON.stringify(posts, null, 2));
 }

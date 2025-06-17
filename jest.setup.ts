@@ -1,3 +1,20 @@
+import 'whatwg-fetch';
+
+declare global {
+  var NextResponse: {
+    json: (data: any) => {
+      json: () => Promise<any>;
+    };
+  };
+}
+
+// NextResponseのモック
+global.NextResponse = {
+  json: (data: any) => ({
+    json: async () => data,
+  }),
+};
+
 class LocalStorageMock {
     private store: Record<string, string> = {};
   
